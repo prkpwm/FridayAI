@@ -1,0 +1,119 @@
+import AI
+import re
+import pprint
+import os, playsound
+import pyautogui
+import time
+obj = AI.Friday()
+from google_trans_new import google_translator  
+trans = google_translator()
+
+def t2s(text):
+    obj.text2speech(text,lang='th')
+
+t2s('สวัสดีค่ะ,ฉันเป็นผู้ช่วยส่วนตัวคุณค่ะ')
+
+while True:
+    status, command = obj.hot_word_detect(lang='th')
+    if status:
+        for i in range(3):
+            res = obj.mic_input(lang='th')
+            if re.search('การค้นหาแบบทวิภาค|binary search|binary', res):
+                f = open("code/binary_search.txt", "r")
+                c=0
+                for x in f:
+                    pyautogui.keyDown('shift')
+                    for i in range(c):
+                        pyautogui.press(['tab'])
+                    pyautogui.keyUp('shift') 
+                    time.sleep(0.01)
+                    pyautogui.write(x, interval=0.02)
+                    c+=1
+                f.close()
+                break
+            
+            if re.search('การเรียงแบบรวดเร็ว|quick sort|quick sorted|quick exhaust', res):
+                f = open("code/quick_sort.txt", "r")
+                c=0
+                for x in f:
+                    pyautogui.keyDown('shift')
+                    for i in range(c):
+                        pyautogui.press(['tab'])
+                    pyautogui.keyUp('shift') 
+                    pyautogui.write(x, interval=0.02)
+                    c+=1
+                f.close()
+                break
+
+            if re.search('link list|linked list', res):
+                f = open("code/Linked_list.txt", "r")
+                c=0
+                for x in f:
+                    pyautogui.keyDown('shift')
+                    for i in range(c):
+                        pyautogui.press(['tab'])
+                    pyautogui.keyUp('shift') 
+                    pyautogui.write(x, interval=0.02)
+                    c+=1
+                f.close()
+                break
+
+            if re.search("ตอนนี้อุณหภูมิเท่าไหร่", res):
+                city = res.split(' ')[-1]
+                weather_res = obj.weather(city=city)
+                print(weather_res)
+                t2s(weather_res)
+                break
+
+            if re.search('ตอนนี้เวลาเท่าไหร่', res):
+                time = obj.tell_me_time()
+                t2s(time)
+                break
+
+            if re.search('อ่านข่าว', res):
+                import requests
+                from bs4  import BeautifulSoup
+                url = "https://news.google.com/rss?hl=th&gl=TH&ceid=TH:th"
+                web = requests.get(url)
+                soup = BeautifulSoup(web.text,'html.parser')
+                findword = soup.find_all("title")
+                for new in findword:
+                    new = str(new).split("<title>")[1]
+                    new = str(new).split("</title>")[0]
+                    new = str(new).split("-")[0]
+                    print(new)
+                    t2s(new)
+                break
+
+            if re.search('วันนี้วันที่เท่าไหร่', res):
+                date = obj.tell_me_date()
+                print(date)
+                trans = trans.translate(date,lang_tgt='th')
+                t2s(trans)
+                break
+
+            if re.search('เปิด', res):
+                domain = res.split(' ')[-1]
+                open_result = obj.website_opener(domain)
+                print(open_result)
+                break
+
+            if re.search('ทำอะไรได้บ้าง', res):
+                ans = "I can do lots of things"
+                ans = ans.replace('"', "'")
+                trans = trans.translate(ans, lang_tgt='th')
+                t2s(trans)
+                break
+
+            if re.search('เขียนคำว่า', res):
+                print(res)
+                domain = res.split(' ')[-1]
+                t2s(domain)
+                pyautogui.write(domain, interval=0.16)
+                break
+
+    else:
+        continue
+
+
+
